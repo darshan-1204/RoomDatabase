@@ -1,9 +1,12 @@
 package com.example.roomdatabase
 
+import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -44,11 +47,35 @@ class FoodAdapter(list: List<FoodEntity>) : RecyclerView.Adapter<FoodAdapter.Foo
         holder.price.text = list[position].price.toString()
         holder.rating.rating = list[position].rating
 
+        holder.itemView.setOnClickListener{
+
+            var dialog = Dialog(context)
+            dialog.setContentView(R.layout.data_update)
+
+            var edtName = dialog.findViewById<EditText>(R.id.edtName)
+            var edtPrice = dialog.findViewById<EditText>(R.id.edtPrice)
+            var rtFood = dialog.findViewById<RatingBar>(R.id.edtRate)
+            var btnUpdate = dialog.findViewById<Button>(R.id.btnUpdate)
+
+
+            edtName.setText(list.get(position).name)
+            edtPrice.setText(list.get(position).price.toString())
+            rtFood.rating = (list.get(position).rating)
+
+            btnUpdate.setOnClickListener {
+
+                var data = FoodEntity(edtName.text.toString(),edtPrice.text.toString().toInt(),rtFood.rating)
+                data.id = list[position].id
+
+                db.foods().updateFood(data)
+                dialog.dismiss()
+                ShowActivity.update()
+            }
+        }
         holder.delete.setOnClickListener {
 
             db.foods().deleteFood(list[position])
-//            ShowActivity.update()
-
+            ShowActivity.update()
         }
     }
 }
